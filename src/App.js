@@ -73,6 +73,7 @@ function App({
                 <Resizer {...{ columns, rows, running, resize }} />
                 <Footer />
             </div>
+            <Insructions />
             <ForConway />
         </div>
     );
@@ -162,6 +163,20 @@ function Footer() {
                 cells={[1, 1, 1, 0, 0, 1, 0, 1, 0]}
                 toggleCell={() => {}}
             />
+        </div>
+    );
+}
+
+function Insructions() {
+    return (
+        <div id="instructions">
+            <p>
+                Click anywhere on the Universe while game is <em>paused</em> to toggle a cell. <br />
+                Click <span role="img" aria-label="Randomize Button">🔀</span> while game is <em>paused</em> to sprinkle live cells randomly all over the Universe. <br />
+                Change the adjacent textbox containing '0.9' to adjust the probability of a random cell being live.
+                Click <span role="img" aria-label="Run Button">▶️</span> or <span role="img" aria-label="Pause Button">⏸️</span> to run or pause the automata. <br />
+                Click <span role="img" aria-label="Clear Button">🧹</span> while game is <em>paused</em> to clear all cells in the Universe.
+            </p>
         </div>
     );
 }

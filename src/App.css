@@ -97,6 +97,13 @@ body {
   text-align: center;
 }
 
+#instructions {
+  width: 100%;
+  float: left;
+  font-size: 12px;
+  padding-top: 10px;
+}
+
 #for-conway {
   width: 100%;
   float: left;
