@@ -1,0 +1,109 @@
+body {
+  background-color: #555555;
+  color: #eeeeee;
+  text-align: center;
+}
+
+#app {
+  padding: 10px;
+}
+
+#grid {
+  float: left;
+  margin-left: 10px;
+  padding: 5px;
+  background-color: #aaaaaa;
+}
+
+.cell {
+  width: 3px;
+  height: 3px;
+  border-left: 1px solid #cccccc;
+  border-top: 1px solid #cccccc;
+  float: left;
+  font-size: xx-small;
+  color: brown;
+}
+
+#controls {
+  margin-left: 10px;
+  float: left;
+  text-align: center;
+}
+
+#buttons, #steps-container, #randomizer, #resizer, #footer {
+  padding: 5px;
+  padding-bottom: 10px;
+  margin: 5px;
+  border-bottom: 2px solid grey;
+  width: 100px;
+}
+
+#footer {
+  text-align: center;
+  padding: 10px 0 10px 40px;
+  width: 70px;
+  border: none;
+  background-color: #aaaaaa;
+}
+
+#run, #clear, #steps, #steps-lbl,
+#random, #threshold, #resize, #columns, #rows {
+  width: 40px;
+  height: 40px;
+  margin: 5px;
+  padding: 5px;
+  border: none;
+  background: none;
+  color: #eeeeee;
+  font-weight: bold;
+}
+
+#resize {
+  width: 80px;
+}
+
+#run:hover, #clear:hover, #random:hover, #resize:hover {
+  background-color: #444444;
+}
+
+.disabled-button {
+  background: none;
+  color: #cccccc;
+  opacity: 0.5;
+}
+
+#threshold, #columns, #rows {
+  padding: 0;
+  text-align: center;
+}
+
+#columns-lbl, #rows-lbl {
+  text-align: center;
+  width: 50px;
+  display: inline-block;
+}
+
+#steps {
+  font-weight: bold;
+  text-align: left;
+}
+
+#steps-lbl {
+  text-align: right;
+}
+
+#threshold {
+  text-align: center;
+}
+
+#for-conway {
+  width: 100%;
+  float: left;
+  font-size: 10px;
+  padding-top: 10px;
+}
+
+#obituary-link {
+  color: white;
+}
