@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactGA from 'react-ga';
 import './App.css';
 import { TILING } from './automata';
 import { Stage, Layer, Rect } from 'react-konva';
@@ -61,6 +62,11 @@ function App({
     randomize,
     resize
 }) {
+    useEffect(() => {
+        ReactGA.initialize('UA-164368554-1');
+        ReactGA.pageview('/');        
+    });
+
     return (
         <div id="app">
             <div id="grid">
