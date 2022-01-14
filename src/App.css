@@ -61,6 +61,17 @@ body {
   font-weight: bold;
 }
 
+#columns, #rows, #threshold {
+  border: 1px solid #444444;
+  box-sizing: border-box;
+  border-radius: 5px;
+}
+
+#run, #clear, #steps-lbl,
+#random, #resize, #columns-lbl, #rows-lbl {
+  user-select: none;
+}
+
 #resize {
   width: 80px;
 }
