@@ -15,14 +15,16 @@ body {
   background-color: #aaaaaa;
 }
 
-.cell {
-  width: 3px;
-  height: 3px;
-  border-left: 1px solid #cccccc;
-  border-top: 1px solid #cccccc;
-  float: left;
-  font-size: xx-small;
-  color: brown;
+.board {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.board-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 #controls {

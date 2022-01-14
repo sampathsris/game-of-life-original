@@ -1,36 +1,69 @@
 
-import React, { useState, useEffect } from 'react';
-import ReactGA from 'react-ga';
-import './App.css';
-import { TILING } from './automata';
-import { Stage, Layer, Rect } from 'react-konva';
-import { CELLWIDTH } from './constants';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { toggleRunning, toggleCell, clear, randomize, resize } from './automata';
+import ReactGA from 'react-ga';
+import { CELLWIDTH } from './constants';
+import { TILING, toggleRunning, toggleCell, clear, randomize, resize } from './automata';
+import './App.css';
 
-function Cell({
-    cell,
-    ix,
-    columns,
-    toggleCell
+function Canvas({
+    width,
+    height,
+    draw,
+    handleClick,
+    ...rest
 }) {
-    let cellColor = '#eeeeee';
-    let evenColumn = ix % 2;
-    let evenRow = Math.floor(ix / columns) % 2 === 0;
+    const canvasRef = useRef(null);
+    let canvasRect;
+    
+    const onCanvasClick = ({
+        clientX, clientY,
+        altKey, ctrlKey, metaKey, shiftKey,
+        nativeEvent, target, type,
+    }) => {
+        return handleClick({
+            clientX, clientY,
+            altKey, ctrlKey, metaKey, shiftKey,
+            nativeEvent, target, type,
+            normX: clientX - canvasRect.left,
+            normY: clientY - canvasRect.top,
+        });
+    };
 
-    if ((evenColumn === 0 && evenRow) ||
-        (evenColumn !== 0 && !evenRow)) {
-        cellColor = '#ffffff';
-    }
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d');
+        canvasRect = canvas.getBoundingClientRect();
+
+        /*
+        // Uncomment this section for animations
+        let frameCount = 0;
+        let animationFrameId;
+
+        const render = () => {
+            frameCount++;
+            draw(context, frameCount);
+            animationFrameId = window.requestAnimationFrame(render);
+        };
+
+        render();
+
+        return () => {
+            window.cancelAnimationFrame(animationFrameId);
+        }
+        */
+
+        // this will not work if animations are involved
+        draw(context, 0);
+    }, [draw]);
 
     return (
-        <Rect
-            x={(ix % columns) * CELLWIDTH}
-            y={Math.floor(ix / columns) * CELLWIDTH}
-            width={CELLWIDTH} height={CELLWIDTH}
-            fill={TILING.coloringFunction(cell) || cellColor}
-            shadowBlur={cell ? 3 : 0}
-            onClick={() => toggleCell(ix)}
+        <canvas
+            ref={canvasRef}
+            width={width}
+            height={height}
+            onClick={onCanvasClick}
+            {...rest}
         />
     );
 }
@@ -39,14 +72,44 @@ function Board({
     columns,
     rows,
     cells,
-    toggleCell
+    toggleCell,
 }) {
+    const draw = (ctx) => {
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < columns; j++) {
+                const cellColor = TILING.coloringFunction(cells[i * columns + j]);
+
+                if (cellColor) {
+                    ctx.fillStyle = cellColor;
+                    ctx.fillRect(j * CELLWIDTH, i * CELLWIDTH, CELLWIDTH, CELLWIDTH);
+                } else {
+                    const evenRow = !(i % 2);
+                    const evenColumn = !(j % 2);
+                    const shade = (evenColumn && evenRow) || (!evenColumn && !evenRow);
+                    ctx.fillStyle = shade ? '#eeeeee' : '#ffffff';
+                    ctx.fillRect(j * CELLWIDTH, i * CELLWIDTH, CELLWIDTH, CELLWIDTH);
+                }
+            }
+        }
+    };
+
+    const width = columns * CELLWIDTH;
+    const height = rows * CELLWIDTH;
+
+    const handleClick = ({ normX, normY }) => {
+        const row = Math.floor(normX / CELLWIDTH);
+        const col = Math.floor(normY / CELLWIDTH);
+        toggleCell(col * columns + row);
+    }
+
     return (
-        <Stage width={columns * CELLWIDTH} height={rows * CELLWIDTH}>
-            <Layer>
-                {cells.map((cell, ix) => (<Cell key={ix} {...{ cell, ix, columns, toggleCell }} />))}
-            </Layer>
-        </Stage>
+        <div className='board' style={{ width, height, }}>
+            <Canvas
+                className="board-canvas"
+                width={width} height={height}
+                draw={draw} handleClick={handleClick}
+            />
+        </div>
     );
 }
 
