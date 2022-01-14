@@ -3,8 +3,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
 import { CELLWIDTH } from './constants';
-import { TILING, toggleRunning, toggleCell, clear, randomize, resize } from './automata';
+import { TILING, toggleRunning, toggleCell, clear, randomize, setCellSize, resize } from './automata';
 import './App.css';
+import { createTimedFunction } from './util';
 
 function Canvas({
     width,
@@ -72,6 +73,7 @@ function Board({
     columns,
     rows,
     cells,
+    cellSize = CELLWIDTH,
     toggleCell,
 }) {
     const draw = (ctx) => {
@@ -81,24 +83,24 @@ function Board({
 
                 if (cellColor) {
                     ctx.fillStyle = cellColor;
-                    ctx.fillRect(j * CELLWIDTH, i * CELLWIDTH, CELLWIDTH, CELLWIDTH);
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
                 } else {
                     const evenRow = !(i % 2);
                     const evenColumn = !(j % 2);
                     const shade = (evenColumn && evenRow) || (!evenColumn && !evenRow);
                     ctx.fillStyle = shade ? '#eeeeee' : '#ffffff';
-                    ctx.fillRect(j * CELLWIDTH, i * CELLWIDTH, CELLWIDTH, CELLWIDTH);
+                    ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
                 }
             }
         }
     };
 
-    const width = columns * CELLWIDTH;
-    const height = rows * CELLWIDTH;
+    const width = columns * cellSize;
+    const height = rows * cellSize;
 
     const handleClick = ({ normX, normY }) => {
-        const row = Math.floor(normX / CELLWIDTH);
-        const col = Math.floor(normY / CELLWIDTH);
+        const row = Math.floor(normX / cellSize);
+        const col = Math.floor(normY / cellSize);
         toggleCell(col * columns + row);
     }
 
@@ -107,7 +109,8 @@ function Board({
             <Canvas
                 className="board-canvas"
                 width={width} height={height}
-                draw={draw} handleClick={handleClick}
+                draw={createTimedFunction('DRAW', draw)}
+                handleClick={handleClick}
             />
         </div>
     );
@@ -123,6 +126,8 @@ function App({
     toggleCell,
     clear,
     randomize,
+    cellSize,
+    setCellSize,
     resize
 }) {
     useEffect(() => {
@@ -133,12 +138,13 @@ function App({
     return (
         <div id="app">
             <div id="grid">
-                <Board {...{ columns, rows, cells, toggleCell }} />
+                <Board {...{ columns, rows, cells, cellSize, toggleCell }} />
             </div>
             <div id="controls">
                 <StepsIndicator {...{ steps }} />
                 <Buttons {...{ running, toggleRunning, clear}} />
                 <Randomizer {...{ running, randomize }} />
+                <CellSizer {...{running, cellSize, setCellSize}} />
                 <Resizer {...{ columns, rows, running, resize }} />
                 <Footer />
             </div>
@@ -188,10 +194,26 @@ function Randomizer({
 
     return (
         <div id="randomizer">
+            <input id="threshold" type="text" value={threshold} onChange={e => setThreshold(e.target.value)} />
             <button id="random" onClick={() => randomize(threshold)} className={running ? 'disabled-button' : ''} title="Randomize">
                 <span role="img" aria-label="Randomize">🔀</span>
             </button>
-            <input id="threshold" type="text" value={threshold} onChange={e => setThreshold(e.target.value)} />
+        </div>
+    );
+}
+
+function CellSizer({
+    cellSize,
+    setCellSize,
+}) {
+    const [size, setSize] = useState(cellSize);
+
+    return (
+        <div id="cellsizer">
+            <input id="cellsize" type="text" value={size} onChange={e => setSize(e.target.value)} />
+            <button id="setcellsize" onClick={() => setCellSize(size)} title="Set Cell Size">
+                <span role="img" aria-label="Set Cell Size">⬛</span>
+            </button>
         </div>
     );
 }
@@ -266,7 +288,8 @@ export default connect(
         columns: state.columns,
         cells: state.cells,
         steps: state.steps,
-        running: state.running
+        running: state.running,
+        cellSize: state.cellSize,
     }),
-    { toggleRunning, toggleCell, clear, randomize, resize }
+    { toggleRunning, toggleCell, clear, randomize, setCellSize, resize }
 )(App);

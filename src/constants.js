@@ -1,4 +1,4 @@
 
-export const COLUMNS = 60;
-export const ROWS = 60;
-export const CELLWIDTH = 10;
+export const COLUMNS = 1600;
+export const ROWS = 800;
+export const CELLWIDTH = 1;

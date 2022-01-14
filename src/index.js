@@ -3,16 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { COLUMNS, ROWS } from './constants';
+import { CELLWIDTH, COLUMNS, ROWS } from './constants';
 
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import createAutomataReducer, { evolve } from './automata';
 
-const automataReducer = createAutomataReducer(COLUMNS, ROWS);
+const automataReducer = createAutomataReducer(COLUMNS, ROWS, CELLWIDTH);
 const store = createStore(automataReducer);
 
-setInterval(() => store.dispatch(evolve()), 200);
+setInterval(() => store.dispatch(evolve()), 0);
 
 ReactDOM.render(
   <React.StrictMode>

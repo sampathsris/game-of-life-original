@@ -1,3 +1,4 @@
+import { createTimedFunction } from "./util";
 
 export const LIVE = 1;
 const DEAD = 0;
@@ -25,6 +26,7 @@ const TOGGLE_RUNNING = 'TOGGLE_RUNNING';
 const TOGGLE_CELL = 'TOGGLE_CELL';
 const CLEAR = 'CLEAR';
 const RANDOM = 'RANDOM';
+const SET_CELL_SIZE = 'SET_CELL_SIZE';
 const RESIZE = 'RESIZE';
 
 export function evolve() {
@@ -59,6 +61,13 @@ export function randomize(threshold) {
     }
 }
 
+export function setCellSize(cellSize) {
+    return {
+        type: SET_CELL_SIZE,
+        cellSize
+    }
+}
+
 export function resize(columns, rows) {
     return {
         type: RESIZE,
@@ -83,7 +92,7 @@ export const TILING = {
     coloringFunction: value => value === LIVE ? '#444444' : null
 }
 
-export default function createAutomataReducer (columns, rows) {
+export default function createAutomataReducer (columns, rows, cellSize) {
     const nextGenMapper = (cell, neighbors) => {
         let liveNeighbors = neighbors.map(
             neighbor => typeof neighbor === 'undefined' ? 0 : neighbor
@@ -100,14 +109,15 @@ export default function createAutomataReducer (columns, rows) {
         }
     };
 
-    return (state, action) => {
+    const reducer = (state, action) => {
         if (typeof state === 'undefined') {
             return {
                 cells: makeCells(columns, rows),
                 running: false,
                 steps: 0,
                 rows,
-                columns
+                columns,
+                cellSize,
             };
         };
 
@@ -146,14 +156,22 @@ export default function createAutomataReducer (columns, rows) {
                     cells: makeCells(state.columns, state.rows, action.threshold)
                 };
 
+            case SET_CELL_SIZE:
+                if (action.cellSize <= 0) return state;
+
+                return {
+                    ...state,
+                    cellSize: action.cellSize,
+                };
+
             case RESIZE:
                 if (running) return state;
 
                 if (state.rows === action.rows && state.columns === action.columsn) return state;
 
                 return {
+                    ...state,
                     cells: makeCells(action.columns, action.rows),
-                    running: false,
                     steps: 0,
                     rows: action.rows,
                     columns: action.columns
@@ -222,5 +240,7 @@ export default function createAutomataReducer (columns, rows) {
                 return state;
         }
     };
+
+    return createTimedFunction('REDUCER', reducer);
 };
 
