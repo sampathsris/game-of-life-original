@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
-import { CELLWIDTH } from './constants';
-import { TILING, toggleRunning, toggleCell, clear, randomize, setCellSize, resize } from './automata';
+import { BG_1, BG_2, CELLWIDTH, LIVE_CELL_COLOR } from './constants';
+import { toggleRunning, toggleCell, clear, randomize, setCellSize, resize, LIVE } from './automata';
 import './App.css';
 import { createTimedFunction } from './util';
 
@@ -76,10 +76,12 @@ function Board({
     cellSize = CELLWIDTH,
     toggleCell,
 }) {
+    const coloringFunction = value => value === LIVE ? LIVE_CELL_COLOR : null;
+
     const draw = (ctx) => {
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < columns; j++) {
-                const cellColor = TILING.coloringFunction(cells[i * columns + j]);
+                const cellColor = coloringFunction(cells[i * columns + j]);
 
                 if (cellColor) {
                     ctx.fillStyle = cellColor;
@@ -88,7 +90,7 @@ function Board({
                     const evenRow = !(i % 2);
                     const evenColumn = !(j % 2);
                     const shade = (evenColumn && evenRow) || (!evenColumn && !evenRow);
-                    ctx.fillStyle = shade ? '#eeeeee' : '#ffffff';
+                    ctx.fillStyle = shade ? BG_1 : BG_2;
                     ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
                 }
             }

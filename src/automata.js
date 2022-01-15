@@ -1,3 +1,4 @@
+import { LIVE_CELL_COLOR } from "./constants";
 import { createTimedFunction } from "./util";
 
 export const LIVE = 1;
@@ -86,10 +87,6 @@ const generationsEquals = (cells, nextGenCells) => {
     }
 
     return true;
-}
-
-export const TILING = {
-    coloringFunction: value => value === LIVE ? '#444444' : null
 }
 
 export default function createAutomataReducer (columns, rows, cellSize) {
