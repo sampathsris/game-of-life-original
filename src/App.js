@@ -2,10 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
-import { BG_1, BG_2, CELLWIDTH, LIVE_CELL_COLOR } from './constants';
+import { BG_1, BG_2, CELLWIDTH, DEFAULT_RAND, LIVE_CELL_COLOR } from './constants';
 import { toggleRunning, toggleCell, clear, randomize, setCellSize, resize, LIVE } from './automata';
 import './App.css';
-import { createTimedFunction } from './util';
 
 function Canvas({
     width,
@@ -111,7 +110,7 @@ function Board({
             <Canvas
                 className="board-canvas"
                 width={width} height={height}
-                draw={createTimedFunction('DRAW', draw)}
+                draw={draw}
                 handleClick={handleClick}
             />
         </div>
@@ -192,7 +191,7 @@ function Randomizer({
     running,
     randomize
 }) {
-    const [threshold, setThreshold] = useState(0.9);
+    const [threshold, setThreshold] = useState(DEFAULT_RAND);
 
     return (
         <div id="randomizer">
@@ -209,11 +208,20 @@ function CellSizer({
     setCellSize,
 }) {
     const [size, setSize] = useState(cellSize);
+    const valid = size > 0;
+
+    const handleCellSize = () => {
+        if (!valid) {
+            return;
+        }
+
+        setCellSize(size);
+    };
 
     return (
         <div id="cellsizer">
             <input id="cellsize" type="text" value={size} onChange={e => setSize(e.target.value)} />
-            <button id="setcellsize" onClick={() => setCellSize(size)} title="Set Cell Size">
+            <button id="setcellsize" onClick={handleCellSize} title="Set Cell Size">
                 <span role="img" aria-label="Set Cell Size">⬛</span>
             </button>
         </div>
@@ -228,6 +236,17 @@ function Resizer({
 }) {
     const [resizeToColumns, setResizeToColumns] = useState(columns);
     const [resizeToRows, setResizeToRows] = useState(rows);
+    const changed = columns !== resizeToColumns || rows !== resizeToRows;
+    const valid = resizeToColumns >= 1 && resizeToRows >= 1;
+    const resizable = changed && valid;
+
+    const handleResize = () => {
+        if (!resizable) {
+            return;
+        }
+
+        resize(resizeToColumns, resizeToRows);
+    };
 
     return (
         <div id="resizer">
@@ -240,7 +259,7 @@ function Resizer({
                 <input id="rows" type="text" value={resizeToRows} onChange={e => setResizeToRows(Number(e.target.value))} />
             </div>
             <div>
-                <button id="resize" onClick={() => resize(resizeToColumns, resizeToRows)} className={running ? 'disabled-button' : ''} title="Resize">
+                <button id="resize" onClick={handleResize} className={running ? 'disabled-button' : ''} title="Resize">
                     <span>Resize</span>
                 </button>
             </div>

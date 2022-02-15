@@ -1,5 +1,3 @@
-import { LIVE_CELL_COLOR } from "./constants";
-import { createTimedFunction } from "./util";
 
 export const LIVE = 1;
 const DEAD = 0;
@@ -238,6 +236,6 @@ export default function createAutomataReducer (columns, rows, cellSize) {
         }
     };
 
-    return createTimedFunction('REDUCER', reducer);
+    return reducer;
 };
 

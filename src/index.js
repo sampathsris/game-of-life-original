@@ -9,6 +9,7 @@ import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import createAutomataReducer, { evolve } from './automata';
 
+window.data_doNotTime = true;
 const automataReducer = createAutomataReducer(COLUMNS, ROWS, CELLWIDTH);
 const store = createStore(automataReducer);
 
