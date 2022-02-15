@@ -14,7 +14,7 @@ function Canvas({
     ...rest
 }) {
     const canvasRef = useRef(null);
-    let canvasRect;
+    let canvasRect = canvasRef.current?.getBoundingClientRect();
     
     const onCanvasClick = ({
         clientX, clientY,
@@ -25,15 +25,14 @@ function Canvas({
             clientX, clientY,
             altKey, ctrlKey, metaKey, shiftKey,
             nativeEvent, target, type,
-            normX: clientX - canvasRect.left,
-            normY: clientY - canvasRect.top,
+            normX: clientX - canvasRect?.left,
+            normY: clientY - canvasRect?.top,
         });
     };
 
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        canvasRect = canvas.getBoundingClientRect();
 
         /*
         // Uncomment this section for animations
