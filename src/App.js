@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactGA from 'react-ga';
-import { BG_1, BG_2, CELLWIDTH, DEFAULT_RAND, LIVE_CELL_COLOR } from './constants';
-import { toggleRunning, toggleCell, clear, randomize, setCellSize, resize, LIVE } from './automata';
+import { BG_1, BG_2, CELLWIDTH, DECOMPOSING_COLORS, DEFAULT_RAND, LIVE_CELL_COLOR } from './constants';
+import { toggleRunning, toggleCell, clear, randomize, setCellSize, resize, LIVE, FULLY_DECOMPOSED } from './automata';
 import './App.css';
 
 function Canvas({
@@ -74,7 +74,17 @@ function Board({
     cellSize = CELLWIDTH,
     toggleCell,
 }) {
-    const coloringFunction = value => value === LIVE ? LIVE_CELL_COLOR : null;
+    function coloringFunction(value) {
+        if (value === LIVE) {
+            return LIVE_CELL_COLOR;
+        }
+
+        if (value === FULLY_DECOMPOSED) {
+            return null;
+        }
+
+        return DECOMPOSING_COLORS[value];
+    }
 
     const draw = (ctx) => {
         for (let i = 0; i < rows; i++) {

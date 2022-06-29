@@ -1,6 +1,7 @@
 
-export const LIVE = 1;
-const DEAD = 0;
+export const LIVE = 18;
+//const DEAD = 0;
+export const FULLY_DECOMPOSED = 0;
 const MIN_LIVE_NEIGHBORS = 2;
 const MAX_LIVE_NEIGHBORS = 3;
 const REPRODUCTION_THRESHOLD = 3;
@@ -11,9 +12,9 @@ export const makeCells = (columns, rows, threshold) => {
 
     for (let i = 0; i < totalcells; i++) {
         if (!threshold) {
-            cells[i] = DEAD;
+            cells[i] = FULLY_DECOMPOSED;
         } else {
-            cells[i] = Math.random() > threshold ? LIVE : DEAD;
+            cells[i] = Math.random() > threshold ? LIVE : FULLY_DECOMPOSED;
         }
     }
 
@@ -87,20 +88,24 @@ const generationsEquals = (cells, nextGenCells) => {
     return true;
 }
 
+function decompose(cell) {
+    return cell === 0 ? 0 : cell - 1;
+}
+
 export default function createAutomataReducer (columns, rows, cellSize) {
     const nextGenMapper = (cell, neighbors) => {
         let liveNeighbors = neighbors.map(
             neighbor => typeof neighbor === 'undefined' ? 0 : neighbor
         ).reduce(
-            (sum, neighbor) => sum + neighbor,
+            (sum, neighbor) => sum + (neighbor === LIVE ? 1 : 0),
             0
         );
         
         if ((cell === LIVE && liveNeighbors >= MIN_LIVE_NEIGHBORS && liveNeighbors <= MAX_LIVE_NEIGHBORS) ||
-            (cell === DEAD && liveNeighbors === REPRODUCTION_THRESHOLD)) {
+            (cell !== LIVE && liveNeighbors === REPRODUCTION_THRESHOLD)) {
             return LIVE;
         } else {
-            return DEAD;
+            return decompose(cell);
         }
     };
 
@@ -130,7 +135,7 @@ export default function createAutomataReducer (columns, rows, cellSize) {
 
                 return {
                     ...state,
-                    cells: cells.map((cell, ix) => ix === action.index ? (cell === LIVE ? DEAD : LIVE) : cell)
+                    cells: cells.map((cell, ix) => ix === action.index ? (cell === LIVE ? FULLY_DECOMPOSED : LIVE) : cell)
                 }
             
             case CLEAR:
