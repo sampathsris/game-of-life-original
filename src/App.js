@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import ReactGA from 'react-ga';
 import { BG_1, BG_2, CELLWIDTH, DECOMPOSING_COLORS, DEFAULT_RAND, LIVE_CELL_COLOR } from './constants';
-import { toggleRunning, toggleCell, clear, randomize, setCellSize, resize, LIVE, FULLY_DECOMPOSED } from './automata';
+import { toggleRunning, toggleCell, clear, randomize, setCellSize, resize, LIVE, FULLY_DECOMPOSED, evolve } from './automata';
 import './App.css';
 
 function Canvas({
@@ -33,28 +33,16 @@ function Canvas({
     useEffect(() => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-
-        /*
-        // Uncomment this section for animations
-        let frameCount = 0;
-        let animationFrameId;
-
-        const render = () => {
-            frameCount++;
-            draw(context, frameCount);
-            animationFrameId = window.requestAnimationFrame(render);
-        };
-
-        render();
-
-        return () => {
-            window.cancelAnimationFrame(animationFrameId);
-        }
-        */
-
-        // this will not work if animations are involved
         draw(context, 0);
     }, [draw]);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        let id = setInterval(() => dispatch(evolve()), 0);
+
+        return () => clearInterval(id);
+    }, [dispatch]);
 
     return (
         <canvas

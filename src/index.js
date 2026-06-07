@@ -7,13 +7,11 @@ import { CELLWIDTH, COLUMNS, ROWS } from './constants';
 
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import createAutomataReducer, { evolve } from './automata';
+import createAutomataReducer from './automata';
 
 window.data_doNotTime = true;
 const automataReducer = createAutomataReducer(COLUMNS, ROWS, CELLWIDTH);
 const store = createStore(automataReducer);
-
-setInterval(() => store.dispatch(evolve()), 0);
 
 ReactDOM.render(
   <React.StrictMode>
