@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import ReactGA from 'react-ga';
 import { BG_1, BG_2, CELLWIDTH, DECOMPOSING_COLORS, DEFAULT_RAND, LIVE_CELL_COLOR } from './constants';
 import { toggleRunning, toggleCell, clear, randomize, setCellSize, resize, LIVE, FULLY_DECOMPOSED, evolve } from './automata';
 import './App.css';
@@ -128,11 +127,6 @@ function App({
     setCellSize,
     resize
 }) {
-    useEffect(() => {
-        ReactGA.initialize('UA-164368554-1');
-        ReactGA.pageview('/');        
-    });
-
     return (
         <div id="app">
             <div id="grid">
